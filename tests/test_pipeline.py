@@ -86,13 +86,15 @@ class PipelineTests(unittest.TestCase):
     def test_cohort_keeps_observed_empty_months(self):
         """재구매가 전혀 없는 관측 가능한 달도 0으로 남긴다."""
         analyzer = self.analyzer()
-        analyzer.df = pd.DataFrame({
-            "customer_id": ["a", "b"],
-            "order_date": pd.to_datetime(["2024-01-01", "2024-03-01"]),
-        })
+        analyzer.df = pd.DataFrame(
+            {
+                "customer_id": ["a", "b"],
+                "order_date": pd.to_datetime(["2024-01-01", "2024-03-01"]),
+            }
+        )
         result = analyzer.cohort_retention()
         self.assertEqual(result.columns.tolist(), [0, 1, 2])
-        self.assertEqual(result.loc[pd.Period("2024-01"), 2], 0.)
+        self.assertEqual(result.loc[pd.Period("2024-01"), 2], 0.0)
         self.assertTrue(pd.isna(result.loc[pd.Period("2024-03"), 2]))
 
 

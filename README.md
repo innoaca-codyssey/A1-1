@@ -62,6 +62,8 @@ test_all_missing_rejected (test_pipeline.PipelineTests.test_all_missing_rejected
 모든 값이 결측이면 임의 숫자를 만들지 않는다. ... ok
 test_bad_image_shapes (test_pipeline.PipelineTests.test_bad_image_shapes)
 잘못된 차원과 비유한 값을 거절한다. ... ok
+test_cohort_keeps_observed_empty_months (test_pipeline.PipelineTests.test_cohort_keeps_observed_empty_months)
+재구매가 전혀 없는 관측 가능한 달도 0으로 남긴다. ... ok
 test_cohort_right_censoring (test_pipeline.PipelineTests.test_cohort_right_censoring)
 관측되지 않은 미래 월을 재구매 0으로 채우지 않는다. ... ok
 test_group_imputation_and_fallback (test_pipeline.PipelineTests.test_group_imputation_and_fallback)
@@ -74,7 +76,7 @@ test_vector_features (test_pipeline.PipelineTests.test_vector_features)
 이미지별 독립 계산과 배치 벡터 연산을 비교한다. ... ok
 
 ----------------------------------------------------------------------
-Ran 7 tests in 0.118s
+Ran 8 tests in 0.204s
 
 OK
 ```
@@ -332,3 +334,79 @@ $ python -m src.dataset --output data
 ```
 
 재구매가 없는 관측 가능한 달도 표에서 빠지지 않도록 전체 월을 명시적으로 재색인했습니다. 관측 가능한 0과 미래 미관측을 구분하는 회귀 검사를 추가했습니다.
+
+## 비즈니스 인사이트
+
+1. 관측 휴면 고객의 재방문 실험
+
+근거: Churned는 5,626명(49.47%)이고 평균 Recency는 549.2일입니다.
+실행: 이 관측 세그먼트에 재방문 혜택을 노출하는 실험군/대조군을 구성하고 재구매일 수의 증가를 기대합니다.
+검증: 표본 밖 거래가 누락되어 있으므로 실제 전체 거래 이력과 최근 방문 기록이 필요합니다. 이탈했다고 단정한 캠페인은 오분류일 수 있습니다.
+
+2. 관측 고빈도/고금액 고객의 유지 전략
+
+근거: VIP는 76명이고 표본 금액의 1.36%를 차지합니다. 평균 구매일 수는 2.01입니다.
+실행: VIP에게 관심 카테고리 신상품을 우선 안내하는 실험으로 구매일 수 유지와 교차 구매를 기대합니다.
+검증: 상품 마진/할인 비용/전체 고객 생애 구매를 추가로 확인해야 하며, 이 관측 표본만으로 LTV나 캠페인 수익을 계산할 수 없습니다.
+
+3. 최근 관측 저빈도 고객의 다음 구매 유도
+
+근거: New는 5,629명(49.50%)이고 관측 구매일 수는 평균 1.00입니다.
+실행: 이 고객에게 첫 관측 상품과 관련된 카테고리를 추천하고 다음 관측 구매일 발생률의 증가를 확인합니다.
+검증: New는 실제 신규 가입자가 아닌 RFM 규칙 이름입니다. 실제 가입일과 전체 거래를 확인하면 기존 고객으로 판명될 수 있습니다.
+
+
+## 실행 방법
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python -m src.dataset --output data
+python -m src.analysis eda
+python -m src.analysis rfm --interactive
+python -m src.analysis cohort
+python -m unittest discover -s tests -v
+```
+
+[분석 노트북](notebooks/analysis_report.ipynb)에는 info/describe/head, 통계 해석, 실제 그래프, RFM 전략과 코호트 결과가 포함됩니다. 이미지 통계는 일괄 NumPy 연산이며 파일 입력 외에는 이미지 처리 라이브러리를 사용하지 않습니다. Histogram/차분 Edge 피처와 구매 코호트, Plotly 차트가 보너스 3종입니다.
+
+월별 금액과 재구매율은 시간 분산 표본/인기 상품에 한정됩니다. 실제 전체 거래/가입일/마진을 확인하기 전에는 회사 매출, 실제 고객 이탈률이나 캠페인 수익으로 일반화하지 않습니다.
+
+관측 이미지가 없는 행은 480/16,739건(2.87%)입니다. 대치 피처와 실제 관측 피처를 구분하며, 상관계수는 거래 행으로 가중된 값이므로 독립적인 상품 16,739개를 분석한 결과가 아닙니다.
+
+최빈 카테고리 Trousers은 5,066행(30.26%)입니다. 인기 상품 표본의 구성 효과가 크므로 전체 상품군 수요와 구분해 해석해야 합니다. 월별 표본 금액도 추출된 거래 구간과 상품 선택 영향을 받으며 실제 회사 성장률로 해석하지 않습니다.
+
+코호트 그림의 회색은 미래 미관측, 밝은 색은 관측된 낮은 재구매율입니다. 기간 0의 100%가 작은 재구매율을 가리지 않도록 기간 0을 제외한 확대 그림도 함께 제공합니다. 이상치 전후 히스토그램은 같은 bin 경계를 사용했습니다.
+
+![코호트 재구매율 확대](outputs/cohort-followup.png)
+
+## 브라우저 확인
+
+오프라인 HTML을 기존 Chrome headless 세션에서 열어 세그먼트별 점 수와 범례 클릭을 확인했습니다.
+
+```json
+{
+  "traces": [
+    {
+      "name": "Churned",
+      "points": 5626
+    },
+    {
+      "name": "New",
+      "points": 5629
+    },
+    {
+      "name": "VIP",
+      "points": 76
+    },
+    {
+      "name": "Loyal",
+      "points": 41
+    }
+  ],
+  "totalPoints": 11372,
+  "legendToggle": true,
+  "pageErrors": []
+}
+```

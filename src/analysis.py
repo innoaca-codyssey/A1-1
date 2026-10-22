@@ -93,9 +93,13 @@ def eda(analyzer, output):
     brightness_outliers, brightness_bounds = analyzer.detect_outliers("image_mean")
     brightness_kept = df.image_mean.between(*brightness_bounds)
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
-    axes[0].hist(df.image_mean, bins=30, alpha=0.6, label="before")
+    brightness_bins = np.histogram_bin_edges(df.image_mean, bins=30)
+    axes[0].hist(df.image_mean, bins=brightness_bins, alpha=0.6, label="before")
     axes[0].hist(
-        df.loc[brightness_kept, "image_mean"], bins=30, alpha=0.6, label="after"
+        df.loc[brightness_kept, "image_mean"],
+        bins=brightness_bins,
+        alpha=0.6,
+        label="after",
     )
     axes[0].set(
         xlabel="image mean", ylabel="line items", title="Brightness IQR sensitivity"
@@ -149,6 +153,7 @@ def rfm_analysis(analyzer, output, interactive=False):
     )
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
     summary.customers.plot.bar(ax=axes[0])
+    axes[0].bar_label(axes[0].containers[0], fmt="%d")
     axes[0].set(xlabel="segment", ylabel="customers", title="RFM segments")
     sns.heatmap(
         rfm.groupby(["R", "F"]).size().unstack(fill_value=0),
@@ -172,7 +177,9 @@ def rfm_analysis(analyzer, output, interactive=False):
             color="segment",
             title="RFM customer segments (sample observations)",
         )
-        chart.write_html(output / "rfm-interactive.html", include_plotlyjs=True)
+        chart.write_html(
+            output / "rfm-interactive.html", include_plotlyjs=True, div_id="rfm-chart"
+        )
     return {
         "reference_date": str(analyzer.reference_date.date()),
         "customer_count": len(rfm),
@@ -190,6 +197,7 @@ def cohort_analysis(analyzer, output):
     retention.to_csv(output / "cohort-retention.csv")
     fig, ax = plt.subplots(figsize=(14, 9))
     sns.heatmap(retention, mask=retention.isna(), cmap="Blues", vmin=0, vmax=1, ax=ax)
+    ax.set_facecolor("#d9d9d9")
     ax.set(
         xlabel="months since first observed purchase",
         ylabel="first observed purchase month",
@@ -197,6 +205,21 @@ def cohort_analysis(analyzer, output):
     )
     fig.tight_layout()
     fig.savefig(output / "cohort.png", dpi=150)
+    plt.close(fig)
+    followup = retention.drop(columns=0)
+    fig, ax = plt.subplots(figsize=(14, 9))
+    maximum = max(float(np.nanmax(followup.to_numpy())), 1e-6)
+    sns.heatmap(
+        followup, mask=followup.isna(), cmap="Blues", vmin=0, vmax=maximum, ax=ax
+    )
+    ax.set_facecolor("#d9d9d9")
+    ax.set(
+        xlabel="months since first observed purchase",
+        ylabel="cohort",
+        title="Follow-up retention (period zero excluded)",
+    )
+    fig.tight_layout()
+    fig.savefig(output / "cohort-followup.png", dpi=150)
     plt.close(fig)
     return {
         "cohorts": len(retention),
