@@ -1,0 +1,64 @@
+{
+  "item_rows": 45786568,
+  "unique_customer_months": 1603806,
+  "unknown_registration_rows": 0,
+  "before_registration_rows": 436817,
+  "invalid_transaction_dates": 0,
+  "non_purchase_rows": 2707278,
+  "observed_start": "2018-11-21",
+  "observed_end": "2019-03-18",
+  "observed_days_per_month": {
+    "2018-11": 10,
+    "2018-12": 31,
+    "2019-01": 31,
+    "2019-02": 28,
+    "2019-03": 18
+  },
+  "complete_month_numbers": [
+    587,
+    588,
+    589
+  ],
+  "registrations": 400162,
+  "invalid_registration_dates": 0,
+  "conversion": [
+    {
+      "signup_month": "2018-12",
+      "registrations": 16659,
+      "signup_month_payers": 10760,
+      "initial_conversion": 0.645897112671829
+    },
+    {
+      "signup_month": "2019-01",
+      "registrations": 11311,
+      "signup_month_payers": 7549,
+      "initial_conversion": 0.6674034126071965
+    },
+    {
+      "signup_month": "2019-02",
+      "registrations": 10643,
+      "signup_month_payers": 7755,
+      "initial_conversion": 0.7286479376115756
+    }
+  ],
+  "retention": {
+    "2018-12": {
+      "0": 1.0,
+      "1": 0.9075278810408922,
+      "2": 0.9383828996282528
+    },
+    "2019-01": {
+      "0": 1.0,
+      "1": 0.9535037753344814,
+      "2": null
+    },
+    "2019-02": {
+      "0": 1.0,
+      "1": null,
+      "2": null
+    }
+  },
+  "signup_definition": "first_issue_date: first membership card issue; not first observed purchase",
+  "denominator": "registered members purchasing in their signup month; conversion reported separately",
+  "observation": "only calendar months with every date present globally; later/partial months are NaN"
+}
