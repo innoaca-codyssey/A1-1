@@ -12,6 +12,11 @@
     0.05333050847457627
   ],
   "outlier_count": 0,
+  "brightness_outlier_count": 206,
+  "brightness_iqr_bounds": [
+    0.44839218239379103,
+    1.0011852787990196
+  ],
   "statistics": {
     "price": {
       "count": 16739.0,

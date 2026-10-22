@@ -99,6 +99,11 @@ $ python -m src.analysis eda --data data/analysis_transactions.csv --images data
     0.05333050847457627
   ],
   "outlier_count": 0,
+  "brightness_outlier_count": 206,
+  "brightness_iqr_bounds": [
+    0.44839218239379103,
+    1.0011852787990196
+  ],
   "statistics": {
     "price": {
       "count": 16739.0,
@@ -223,7 +228,6 @@ $ python -m src.analysis eda --data data/analysis_transactions.csv --images data
     }
   }
 }
-Matplotlib is building the font cache; this may take a moment.
 ```
 
 ![가격 분포와 IQR 비교](outputs/price-distributions.png)
@@ -239,3 +243,7 @@ Matplotlib is building the font cache; this may take a moment.
 분석 표본은 16,739행/128상품/11,372고객입니다. 가격은 원 데이터의 정규화 단위이며 원화/달러 매출로 해석하지 않습니다. IQR 밖 0행은 분포 비교용으로만 분리했고 실제 구매를 오류로 단정해 RFM에서 삭제하지 않았습니다.
 
 가격과 단어 수 상관계수는 0.2428, 관측 이미지 밝기와는 -0.0044입니다. 이 상관관계만으로 상품 설명이나 촬영 밝기가 가격을 결정한다고 해석할 수 없으며, 카테고리/상품 선택의 영향을 함께 고려해야 합니다.
+
+가격의 기본 IQR 경계에서는 이상치가 0건이었습니다. 별도로 이미지 밝기에서 실제 206행을 탐지하고 전후 분포를 비교했습니다. 이상치 판정만으로 데이터 오류라고 단정하지 않습니다.
+
+![이미지 밝기 IQR](outputs/image-outliers.png)

@@ -90,6 +90,25 @@ def eda(analyzer, output):
     fig.tight_layout()
     fig.savefig(output / "monthly.png", dpi=150)
     plt.close(fig)
+    brightness_outliers, brightness_bounds = analyzer.detect_outliers("image_mean")
+    brightness_kept = df.image_mean.between(*brightness_bounds)
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    axes[0].hist(df.image_mean, bins=30, alpha=0.6, label="before")
+    axes[0].hist(
+        df.loc[brightness_kept, "image_mean"], bins=30, alpha=0.6, label="after"
+    )
+    axes[0].set(
+        xlabel="image mean", ylabel="line items", title="Brightness IQR sensitivity"
+    )
+    axes[0].legend()
+    axes[1].boxplot(
+        [df.image_mean, df.loc[brightness_kept, "image_mean"]],
+        tick_labels=["before", "after"],
+    )
+    axes[1].set(ylabel="image mean", title="Brightness before/after")
+    fig.tight_layout()
+    fig.savefig(output / "image-outliers.png", dpi=150)
+    plt.close(fig)
     stats = df[numeric].describe().to_dict()
     return {
         "rows": len(df),
@@ -102,6 +121,8 @@ def eda(analyzer, output):
         "image_missing_rows": int((~df.image_available).sum()),
         "iqr_bounds": bounds,
         "outlier_count": len(outliers),
+        "brightness_outlier_count": len(brightness_outliers),
+        "brightness_iqr_bounds": brightness_bounds,
         "statistics": stats,
         "correlations": {
             "price_word_count": float(correlations.loc["price", "word_count"]),
