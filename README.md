@@ -312,3 +312,21 @@ $ python -m src.analysis cohort
 ```
 
 ![구매 코호트](outputs/cohort.png)
+
+## 데이터 준비 재현
+
+고정 revision, Range 응답 검증과 SHA-256을 포함한 `src.dataset`으로 같은 표본을 준비할 수 있습니다. 캐시를 이용한 전체 재현에서 선택 CSV가 원본 표본과 바이트 단위로 일치했습니다. 사진 2개의 404는 성공으로 처리하지 않고 결측 상태로 남깁니다. 원본 데이터와 사진은 저장소에 재배포하지 않습니다.
+
+```text
+$ python -m src.dataset --output data
+{
+  "revision": "acde210b0090be673abdba5f989c48925c856f78",
+  "raw_rows": 305761,
+  "selected_rows": 16739,
+  "products": 128,
+  "images_downloaded": 126,
+  "images_failed": 2,
+  "articles_sha256": "25f21882053517f7684ea43f524225a9481a7bb9aab9cf0abfc7fe8c4576a72b",
+  "selected_csv_sha256": "183c0bc8dbb1df689f3cb145dc85fd4410d26e617da918753b823a654161c1ea"
+}
+```
