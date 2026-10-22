@@ -1,0 +1,8 @@
+{
+  "cohorts": 25,
+  "periods": 24,
+  "first_purchase_definition": "first observed purchase in sampled time ranges; account signup dates unavailable",
+  "right_censored_cells": 276,
+  "period_zero_min": 1.0,
+  "period_zero_max": 1.0
+}

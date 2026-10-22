@@ -294,3 +294,21 @@ $ python -m src.analysis rfm --interactive
 ![RFM 세분화](outputs/rfm-segments.png)
 
 [인터랙티브 RFM 차트](outputs/rfm-interactive.html)는 Plotly 보너스 구현입니다.
+
+## 코호트 재구매 분석
+
+계정 생성일이 제공되지 않아 코호트 가입월은 표본에서 최초로 관측한 구매월로 정의했습니다. 실제 계정 가입월/생애 최초 구매월과는 구분합니다. 아직 관측할 수 없는 미래 기간은 0이 아닌 결측으로 남겼습니다.
+
+```text
+$ python -m src.analysis cohort
+{
+  "cohorts": 25,
+  "periods": 24,
+  "first_purchase_definition": "first observed purchase in sampled time ranges; account signup dates unavailable",
+  "right_censored_cells": 276,
+  "period_zero_min": 1.0,
+  "period_zero_max": 1.0
+}
+```
+
+![구매 코호트](outputs/cohort.png)
