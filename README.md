@@ -51,3 +51,30 @@ DONE 305761 transactions 36127865 article bytes
 ```
 
 출처: [원 데이터 안내](https://data.hmgroup.com/), [공개 미러](https://huggingface.co/datasets/einrafh/hnm-fashion-recommendations-data). 이미지와의 연결 및 결측/분포 분석은 이어서 수행합니다. 원본 표본과 Range별 SHA-256은 실습 데이터에 보존합니다.
+
+## 파이프라인 검증
+
+이미지 평균/표준편차의 벡터 연산, 히스토그램 합, 그룹 대치/전체 통계 보완, IQR 원본 보존, 구매일 기준 Frequency, 코호트 우측 절단을 확인했습니다.
+
+```text
+$ python -m unittest discover -s tests -v
+test_all_missing_rejected (test_pipeline.PipelineTests.test_all_missing_rejected)
+모든 값이 결측이면 임의 숫자를 만들지 않는다. ... ok
+test_bad_image_shapes (test_pipeline.PipelineTests.test_bad_image_shapes)
+잘못된 차원과 비유한 값을 거절한다. ... ok
+test_cohort_right_censoring (test_pipeline.PipelineTests.test_cohort_right_censoring)
+관측되지 않은 미래 월을 재구매 0으로 채우지 않는다. ... ok
+test_group_imputation_and_fallback (test_pipeline.PipelineTests.test_group_imputation_and_fallback)
+그룹 통계와 전체 통계 보완의 실제 값을 확인한다. ... ok
+test_iqr (test_pipeline.PipelineTests.test_iqr)
+IQR 이상치와 원본 불변을 확인한다. ... ok
+test_rfm_purchase_days (test_pipeline.PipelineTests.test_rfm_purchase_days)
+Frequency를 같은 날 구매한 상품 수와 혼동하지 않는다. ... ok
+test_vector_features (test_pipeline.PipelineTests.test_vector_features)
+이미지별 독립 계산과 배치 벡터 연산을 비교한다. ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.118s
+
+OK
+```
