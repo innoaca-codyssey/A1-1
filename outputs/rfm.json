@@ -1,0 +1,35 @@
+{
+  "reference_date": "2020-09-23",
+  "customer_count": 11372,
+  "frequency_definition": "distinct observed purchase dates, not line-item count",
+  "segments": {
+    "Churned": {
+      "customers": 5626,
+      "mean_recency": 549.1551724137931,
+      "mean_frequency": 1.0,
+      "mean_monetary": 0.030856845035458855,
+      "total_monetary": 173.60061016949152
+    },
+    "Loyal": {
+      "customers": 41,
+      "mean_recency": 427.8048780487805,
+      "mean_frequency": 2.0,
+      "mean_monetary": 0.05857999173212071,
+      "total_monetary": 2.401779661016949
+    },
+    "New": {
+      "customers": 5629,
+      "mean_recency": 179.9236098774205,
+      "mean_frequency": 1.0,
+      "mean_monetary": 0.031083986980256596,
+      "total_monetary": 174.9717627118644
+    },
+    "VIP": {
+      "customers": 76,
+      "mean_recency": 186.03947368421052,
+      "mean_frequency": 2.013157894736842,
+      "mean_monetary": 0.06346520963425513,
+      "total_monetary": 4.823355932203389
+    }
+  }
+}

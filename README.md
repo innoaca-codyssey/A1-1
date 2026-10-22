@@ -247,3 +247,50 @@ $ python -m src.analysis eda --data data/analysis_transactions.csv --images data
 가격의 기본 IQR 경계에서는 이상치가 0건이었습니다. 별도로 이미지 밝기에서 실제 206행을 탐지하고 전후 분포를 비교했습니다. 이상치 판정만으로 데이터 오류라고 단정하지 않습니다.
 
 ![이미지 밝기 IQR](outputs/image-outliers.png)
+
+## RFM 고객 세분화
+
+기준일은 최종 관측일 다음 날입니다. 주문 ID가 없어 Frequency는 서로 다른 관측 구매일 수로 정의하고 Monetary는 실제 상품 행 금액 합계로 계산했습니다. 동일 날 여러 상품을 구매한 행을 여러 주문으로 세지 않았습니다.
+
+```text
+$ python -m src.analysis rfm --interactive
+{
+  "reference_date": "2020-09-23",
+  "customer_count": 11372,
+  "frequency_definition": "distinct observed purchase dates, not line-item count",
+  "segments": {
+    "Churned": {
+      "customers": 5626,
+      "mean_recency": 549.1551724137931,
+      "mean_frequency": 1.0,
+      "mean_monetary": 0.030856845035458855,
+      "total_monetary": 173.60061016949152
+    },
+    "Loyal": {
+      "customers": 41,
+      "mean_recency": 427.8048780487805,
+      "mean_frequency": 2.0,
+      "mean_monetary": 0.05857999173212071,
+      "total_monetary": 2.401779661016949
+    },
+    "New": {
+      "customers": 5629,
+      "mean_recency": 179.9236098774205,
+      "mean_frequency": 1.0,
+      "mean_monetary": 0.031083986980256596,
+      "total_monetary": 174.9717627118644
+    },
+    "VIP": {
+      "customers": 76,
+      "mean_recency": 186.03947368421052,
+      "mean_frequency": 2.013157894736842,
+      "mean_monetary": 0.06346520963425513,
+      "total_monetary": 4.823355932203389
+    }
+  }
+}
+```
+
+![RFM 세분화](outputs/rfm-segments.png)
+
+[인터랙티브 RFM 차트](outputs/rfm-interactive.html)는 Plotly 보너스 구현입니다.
