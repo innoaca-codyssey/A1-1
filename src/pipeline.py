@@ -196,8 +196,11 @@ class DataAnalyzer:
             - data["cohort"].dt.month
         )
         counts = data.groupby(["cohort", "period"])["customer_id"].nunique().unstack()
-        result = counts.div(counts[0], axis=0)
         last = data["month"].max()
+        first = data["cohort"].min()
+        total_periods = (last.year - first.year) * 12 + last.month - first.month
+        counts = counts.reindex(columns=range(total_periods + 1))
+        result = counts.div(counts[0], axis=0)
         for cohort in result.index:
             available = (last.year - cohort.year) * 12 + last.month - cohort.month
             result.loc[cohort, result.columns <= available] = result.loc[

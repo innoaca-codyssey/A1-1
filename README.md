@@ -303,9 +303,9 @@ $ python -m src.analysis rfm --interactive
 $ python -m src.analysis cohort
 {
   "cohorts": 25,
-  "periods": 24,
+  "periods": 25,
   "first_purchase_definition": "first observed purchase in sampled time ranges; account signup dates unavailable",
-  "right_censored_cells": 276,
+  "right_censored_cells": 300,
   "period_zero_min": 1.0,
   "period_zero_max": 1.0
 }
@@ -330,3 +330,5 @@ $ python -m src.dataset --output data
   "selected_csv_sha256": "183c0bc8dbb1df689f3cb145dc85fd4410d26e617da918753b823a654161c1ea"
 }
 ```
+
+재구매가 없는 관측 가능한 달도 표에서 빠지지 않도록 전체 월을 명시적으로 재색인했습니다. 관측 가능한 0과 미래 미관측을 구분하는 회귀 검사를 추가했습니다.
